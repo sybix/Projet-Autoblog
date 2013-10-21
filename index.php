@@ -34,6 +34,22 @@ if(file_exists("functions.php")){
     die;
 }
 
+$youtorr_db_error = FALSE;
+if(ENABLE_YOUTORR == TRUE){
+  try { #Connect to the db
+      switch($youtorr_db_engine){
+          case "sqlite" :
+              $youtorr_db = new PDO('sqlite:'.$youtorr_db_name);	
+              break;
+          case "mysql" :
+              $youtorr_db = new PDO('mysql:host='.$youtorr_db_host.';port='.$youtorr_db_port.';dbname='.$youtorr_db_name,
+              $youtorr_db_user,$youtorr_db_password);
+              break;
+      }
+  } catch (PDOException $e ) {
+  	$youtorr_db_error = TRUE;
+  }
+}
 function get_title_from_feed($url) {
     return get_title_from_datafeed(file_get_contents($url));
 }
@@ -953,10 +969,50 @@ if( !empty($_POST['opml_file']) && ALLOW_NEW_AUTOBLOGS && ALLOW_NEW_AUTOBLOGS_BY
                 }
                 echo $autoblogs_display;
                 ?>
-            </ul>
-            <?php echo "<p>".count($autoblogs)." autoblogs hébergés</p>"; ?>
-    </section>
-        
+       </ul>
+       <?php echo "<p>".count($autoblogs)." autoblogs hébergés</p>"; ?>
+       </section>
+       <?php if(ENABLE_YOUTORR == TRUE && $youtorr_db_error == FALSE){ ?>
+         <section id="autoblogs">
+         <header>
+           <?php
+             $title='<h2><a href="'.$youtorr_url.'" >Channel youtube hébergé sur youtorr</h2> </a>';
+           echo $title
+           ?>
+         </header>
+         <ul>
+         <?php
+           $conn = $youtorr_db->prepare("SELECT channel,url FROM channels");
+           $conn->execute();
+           $channels=$conn->fetchAll(PDO::FETCH_ASSOC);
+           $youtorrchannels_display='';
+           foreach($channels as $channel){
+             $youtorrchannels_display.='<li>
+             <header>
+               <a title="'.$channel['channel'].'" href="'.$youtorr_url.'?page=channel&channel='.$channel['channel'].'">
+                 <h3>'.$channel['channel'].'</h3>
+               </a>
+             </header>
+               <div class="source"> <a href="'.$youtorr_url.'/'.$youtorr_zip.$channel['channel'].'.zip" >Toutes les videos</a>| source : <a href="'.$channel['url'].'">'.$channel['url'].'</a></div>
+             </li>';
+           }
+         echo $youtorrchannels_display;
+         ?>
+         </ul>
+         <?php echo "<p>".count($channels)." channels hébergés</p>"; ?>
+         </section>
+         <?php } 
+         if(ENABLE_YOUTORR == TRUE && $youtorr_db_error == TRUE){ ?>
+         <section id="autoblogs">
+         <header>
+           <?php
+             $title='<h2><a href="'.$youtorr_url.'" >Channel youtube hébergé sur youtorr</h2> </a>';
+           echo $title
+           ?>
+         </header>
+	 Erreur avec la BDD youtorr
+	 </section>
+       <?php } ?> 
     <footer>
       <p>Propulsé par <a href="https://github.com/mitsukarenai/Projet-Autoblog">Projet Autoblog 0.3</a> de <a href="https://www.suumitsu.eu/">Mitsu</a>, <a href="https://www.ecirtam.net/">Oros</a> et <a href="http://hoa.ro">Arthur Hoaro</a> (Domaine Public)</p>
       <p><?php if(defined('FOOTER') && strlen(FOOTER)>0 ){ echo FOOTER; } ?></p>

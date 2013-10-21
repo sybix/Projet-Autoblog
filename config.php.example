@@ -42,6 +42,20 @@
 /**
  * Import autoblogs from friend's autoblog farm - Add a link to the JSON export
  **/
+/** 
+ * Youyorr config
+ **/
+define('ENABLE_YOUTORR', TRUE);
+$youtorr_url = "http://youtorr.jeannedhack.org";
+$youtorr_zip = "torrent/torrent_active/YOUTORR-";
+$youtorr_db = null;
+$youtorr_db_engine = "mysql";
+$youtorr_db_name = "youtorr";
+$youtorr_db_user = "youtorr";
+$youtorr_db_password = "passwd";
+$youtorr_db_hHost = "localhost";
+$youtorr_db_port = 3306;
+
 $friends_autoblog_farm = array(
     'https://raw.github.com/mitsukarenai/xsaf-bootstrap/master/3.json',
     // 'https://www.ecirtam.net/autoblogs/?export',
