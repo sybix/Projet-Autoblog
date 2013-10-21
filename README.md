@@ -65,6 +65,8 @@ Domaine public.
 
 Changelog
 =====================
+- 2013-10-21
+ - Fork to add support for youtorr
 - 2013-10-14  MILESTONE 0.3.1
  - code semantics
  - "docs" filesize
