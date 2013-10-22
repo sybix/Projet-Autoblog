@@ -49,6 +49,12 @@ define('ENABLE_YOUTORR', TRUE);
 $youtorr_url = "http://youtorr.jeannedhack.org";
 $youtorr_zip = "torrent/torrent_active/YOUTORR-";
 $youtorr_db = null;
+/**
+ * Use api to use the youtorr API.
+ * Or use a supported SGDB engine
+ */
+#$youtorr_db_engine = "api";
+#$youtorr_api = "http://youtorr.jeannedhack.org/api.php?page=channel";
 $youtorr_db_engine = "mysql";
 $youtorr_db_name = "youtorr";
 $youtorr_db_user = "youtorr";

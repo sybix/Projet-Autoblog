@@ -982,11 +982,25 @@ if( !empty($_POST['opml_file']) && ALLOW_NEW_AUTOBLOGS && ALLOW_NEW_AUTOBLOGS_BY
          </header>
          <ul>
          <?php
-           $conn = $youtorr_db->prepare("SELECT channel,url FROM channels");
-           $conn->execute();
-           $channels=$conn->fetchAll(PDO::FETCH_ASSOC);
+	   $youtorr_channels='';
+	   if($youtorr_db_engine=='api'){
+	     $youtorr_json = file_get_contents($youtorr_api);
+	     $results = json_decode($youtorr_json,true);
+	     $youtorr_channels=array();
+	     $count=0;
+	     foreach($results as $result){
+	       foreach($result as $key => $value){
+		  $youtorr_channels[$count]=array('channel' => $key, 'url' => $value);
+		  $count++;
+               }
+             }
+	   }else{
+             $conn = $youtorr_db->prepare("SELECT channel,url FROM channels");
+             $conn->execute();
+             $youtorr_channels=$conn->fetchAll(PDO::FETCH_ASSOC);
+	   }
            $youtorrchannels_display='';
-           foreach($channels as $channel){
+           foreach($youtorr_channels as $channel){
              $youtorrchannels_display.='<li>
              <header>
                <a title="'.$channel['channel'].'" href="'.$youtorr_url.'?page=channel&channel='.$channel['channel'].'">
@@ -999,7 +1013,7 @@ if( !empty($_POST['opml_file']) && ALLOW_NEW_AUTOBLOGS && ALLOW_NEW_AUTOBLOGS_BY
          echo $youtorrchannels_display;
          ?>
          </ul>
-         <?php echo "<p>".count($channels)." channels hébergés</p>"; ?>
+         <?php echo "<p>".count($youtorr_channels)." channels hébergés</p>"; ?>
          </section>
          <?php } 
          if(ENABLE_YOUTORR == TRUE && $youtorr_db_error == TRUE){ ?>
